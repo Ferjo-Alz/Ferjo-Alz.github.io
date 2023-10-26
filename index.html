@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+font-family: Arial, sans-serif;
+}
+
+h2 {
+  color: #333;
+}
+
+form {
+  margin-bottom: 20px;
+}
+
+input[type="number"], input[type="text"] {
+  width: 100%;
+  padding: 8px 12px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border: none;
+  background-color: #f8f8f8;
+}
+
+input[type="button"] {
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+input[type="button"]:hover {
+  opacity: 0.8;
+}
+
+#result {
+    background-color: #f8f8f8;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 5px;
+}
+
+#result p {
+    border-bottom: solid 1px #ddd;
+    padding-bottom:10px;
+}
+
+#result p:last-child {
+    border-bottom:none;
+}
+</style>
+</head>
+<body>
+
+<h2>Calculadora de salarios</h2>
+
+<form id="myForm">
+  <label for="numEmployees">Número de empleados:</label><br>
+  <input type="number" id="numEmployees" name="numEmployees"><br>
+  <input type="button" value="Calcular" onclick="calculate()">
+</form>
+
+<div id="employeeForms"></div>
+
+<p id="result"></p>
+
+<script>
+var employees = [];
+
+function calculate() {
+  var numEmployees = document.getElementById("numEmployees").value;
+  
+  var employeeFormsDiv = document.getElementById("employeeForms");
+  employeeFormsDiv.innerHTML = '';
+  
+  for (var i = 0; i < numEmployees; i++) {
+    var form = document.createElement("form");
+    form.id = "employeeForm" + i;
+    
+    var nameLabel = document.createElement("label");
+    nameLabel.for = "name" + i;
+    nameLabel.innerHTML = "Nombre del empleado " + (i + 1) + ":";
+    
+    var nameInput = document.createElement("input");
+    nameInput.type = "text";
+    nameInput.id = "name" + i;
+    nameInput.name = "name" + i;
+    
+    var salaryLabel = document.createElement("label");
+    salaryLabel.for = "salary" + i;
+    salaryLabel.innerHTML = "Salario del empleado " + (i + 1) + ":";
+    
+    var salaryInput = document.createElement("input");
+    salaryInput.type = "number";
+    salaryInput.id = "salary" + i;
+    salaryInput.name = "salary" + i;
+
+    var extraHoursLabel = document.createElement("label");
+    extraHoursLabel.for = "extraHours" + i;
+    extraHoursLabel.innerHTML = "Horas extras del empleado " + (i + 1) + ":";
+
+    var extraHoursInput = document.createElement("input");
+    extraHoursInput.type = "number";
+    extraHoursInput.id = "extraHours" + i;
+    extraHoursInput.name = "extraHours" + i;
+
+    
+    form.appendChild(nameLabel);
+    form.appendChild(nameInput);
+    form.appendChild(salaryLabel);
+    form.appendChild(salaryInput);
+    form.appendChild(extraHoursLabel);
+    form.appendChild(extraHoursInput);
+    
+    employeeFormsDiv.appendChild(form);
+  }
+
+  var button = document.createElement("input");
+  button.type = "button";
+  button.value = "Calcular salarios";
+  button.onclick = function() { calculateSalaries(numEmployees); };
+
+  employeeFormsDiv.appendChild(button);
+}
+
+function calculateSalaries(numEmployees) {
+  for (var i=0; i<numEmployees; i++) {
+      addEmployee(i);
+  }
+
+  // Mover la lógica para mostrar la suma y el promedio aquí
+   var totalSalarySum=employees.reduce(function(a, b){
+        return a+b;
+   },0);
+
+   var averageSalarySum=totalSalarySum/employees.length;
+
+   document.getElementById("result").innerHTML+="<br><br> Suma de salarios: "+totalSalarySum.toFixed(2)+"<br> Promedio de salarios: "+averageSalarySum.toFixed(2);
+}
+
+function addEmployee(i) {
+  var name = document.getElementById("name" + i).value;
+  var salary = document.getElementById("salary" + i).value;
+  var extraHours= document.getElementById("extraHours"+i).value;
+
+  
+  var bonus=250; // Bonificación fija de Q250
+  
+  if(extraHours>0){
+      bonus+=extraHours*10; //Asumiendo que cada hora extra se paga con Q10
+  }
+  
+  var igss=salary*(4.83/100); // La tasa del IGSS es del 4.83%
+  
+  var ornato;
+  
+  if(salary<=500){
+      ornato=4; 
+   }else if(salary<=1000){
+      ornato=10; 
+   }else if(salary<=3000){
+      ornato=15; 
+   }else if(salary<=6000){
+      ornato=50; 
+   }else if(salary<=9000){
+      ornato=75; 
+   }else if(salary<=12000){
+      ornato=100;
+   }else{
+      ornato=150;
+   }
+  
+   var totalSalaryReceived=salary-igss+bonus;
+
+   employees.push(totalSalaryReceived);
+
+   document.getElementById("result").innerHTML+="<br><br>Nombre: "+name+"<br> Salario a recibir: "+totalSalaryReceived.toFixed(2)+"<br> IGSS: "+igss.toFixed(2)+"<br> Boleto de Ornato: "+ornato.toFixed(2)+"<br> Horas extras trabajadas: "+extraHours;
+}
+
+</script>
+
+</body>
+</html>
